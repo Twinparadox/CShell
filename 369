@@ -1,0 +1,26 @@
+#
+
+echo -n "숫자입력: "
+@ last = $<
+@ i = 1
+while ($i <= $last)
+        @ n = `echo $i | wc -c` - 1
+        @ j = 1
+        @ jj = 0
+        while ($j <= $n)
+                @ one = `echo $i | cut -c$j`
+                if ($one == 3 || $one == 6 || $one == 9) then
+                        echo -n "짝 "
+                        @ jj = 1
+                endif
+                @ j++
+        end
+        if ($jj == 0) then
+                echo $i
+        else
+                echo ""
+        endif
+        @ i++
+        
+end
+echo ""
