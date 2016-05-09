@@ -1,0 +1,21 @@
+echo -n "Input : "
+set A = $<
+@ num = `echo $A | wc -c` - 1
+@ i = 1
+@ Large = 0
+@ Small = 0
+@ Num = 0
+while ($i <= $num)
+        set B = `echo $A | cut -c$i`
+        if($B =~ [A-Z]) then
+                @ Large++
+        else if($B =~ [a-z]) then
+                @ Small++
+        else
+                @ Num++
+        endif
+        @ i++
+end
+echo "대문자 : $Large"
+echo "소문자 : $Small"
+echo "숫자 : $Num"
