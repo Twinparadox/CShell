@@ -1,0 +1,56 @@
+# Trash Can Program
+
+
+set TR = $home/.trash
+set TRLIST = $home/.trashlist
+
+if (! -e $TR) mkdir $TR
+if (! -e $TRLIST) touch $TRLIST
+
+if ($#argv < 2) then
+        echo "사용법 : $0 -[dlrx] files..."
+        exit
+endif
+
+switch($argv[1])
+        case "-d":
+                @ i = 2
+                while ($i <= $argv)
+                        if (-e $argv[i]) then
+                                $argv[i] >> trashlist
+                                $cwd >> trashlist
+                                mv $argv[i] $TR
+                                echo "Delte $argv[i]"
+                        else
+                                echo "There is No File Name : $argv[i]"
+                        endif
+                        @ i++
+                end
+                breaksw
+        case "-r":
+                if (! -e $TR/$argv[2]) then
+                        echo "There is No File like that"
+                else
+                        mv $TR/$argv[2] $cwd
+                        echo "Restore $argv[2] in Trash Can"
+                endif
+                breaksw
+        case "-l":
+                echo "==========<Trash Can>=========="
+                ls $TR
+                echo "==============================="
+                breaksw
+        case "-x":
+                echo -n "Are you Sure? (Y/N) "
+                set answer = $<
+                if ($answer == "y") then
+                        rm -r $TR
+                        echo "Clear Trash Can"
+                else
+                        echo "Cancel Clearing"
+                breaksw
+        default:
+                echo "잘못 사용한 옵션"
+                echo "사용법 : $0 -[dlrx] files..."
+                breaksw
+endsw
