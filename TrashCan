@@ -17,8 +17,8 @@ switch($argv[1])
                 @ i = 2
                 while ($i <= $argv)
                         if (-e $argv[i]) then
-                                $argv[i] >> trashlist
-                                $cwd >> trashlist
+                                $argv[i] >> $TRLIST
+                                $cwd >> $TRLIST
                                 mv $argv[i] $TR
                                 echo "Delte $argv[i]"
                         else
