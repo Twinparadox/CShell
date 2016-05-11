@@ -1,0 +1,19 @@
+#
+
+set tmp = `ls`
+
+while ($#tmp)
+        if (-f $tmp[1]) then
+                set tmp2 = `ls -l $tmp[1]`
+                @ len1 = `echo $tmp[1] | wc -c` - 1
+                @ len2 = `echo $tmp2[4] | wc -c` - 1
+                @ n = 20 - ($len1 + $len2)
+                echo -n $tmp[1]
+                while ($n > 0)
+                        echo -n " "
+                        @ n--
+                end
+                echo $tmp2[4]
+        endif
+        shift tmp
+end
