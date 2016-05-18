@@ -1,6 +1,3 @@
-# using GCC Compiler
-# Subject No2, Number Baseball
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -15,8 +12,8 @@ int main()
 
         do
         {
-                dec=rand()%10;
-                one=rand()%10;
+                dec=rand()%9 + 1;
+                one=rand()%9 + 1;
         }while (one==dec || one==hund || dec==hund);
 
         sum = hund * 100 + dec * 10 + one;
