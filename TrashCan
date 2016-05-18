@@ -63,7 +63,7 @@ switch($argv[1])
                 echo -n "Are you Sure? (Y/N) "
                 set answer = $<
                 if ($answer == "y" || $answer == "Y") then
-                        @ line = `echo $TRLIST | wc -l`
+                        @ line = `cat $TRLIST | wc -l`
                         if ($line >= 1) then
                                 while ($line >= 1)
                                         set RPATH = `head -1 $TRLIST`
