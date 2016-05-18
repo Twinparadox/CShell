@@ -3,36 +3,81 @@
 
 set TR = $home/.trash
 set TRLIST = $home/.trashlist
+set TMPLIST = $home/.trashtmplist
 
 if (! -e $TR) mkdir $TR
-if (! -e $TRLIST) touch $TRLIST
+if (! -e $TRLIST) then
+        touch $TRLIST
+        chmod +x $TRLIST
+endif
+if (! -e $TMPLIST) then
+        touch $TMPLIST
+        chmod +x $TMPLIST
+endif
 
-if ($#argv < 2) then
-        echo "사용법 : $0 -[dlrx] files..."
+if ($#argv < 1) then
+        echo "사용법 : $0 -[dlrx,ar] files..."
         exit
 endif
 
 switch($argv[1])
         case "-d":
+                if ($#argv < 2) then
+                        echo "사용법 : $0 -[dlrx,ar] files..."
+                        exit
+                endif
                 @ i = 2
-                while ($i <= $argv)
-                        if (-e $argv[i]) then
-                                $argv[i] >> $TRLIST
-                                $cwd >> $TRLIST
-                                mv $argv[i] $TR
-                                echo "Delte $argv[i]"
+                while ($i <= $#argv)
+                        if (-e $argv[$i]) then
+                                mv $argv[$i] $TR
+                                echo "Delte $argv[$i]"
+                                echo "$argv[$i] $cwd" >> $TRLIST
                         else
-                                echo "There is No File Name : $argv[i]"
+                                echo "There is No File Name : $argv[$i]"
                         endif
                         @ i++
                 end
                 breaksw
         case "-r":
-                if (! -e $TR/$argv[2]) then
-                        echo "There is No File like that"
+                if ($#argv < 2) then
+                        echo "사용법 : $0 -[dlrx] files..."
+                        exit
+                endif
+                @ i = 2
+                while ($i <= $#argv)
+                        if (! -e $TR/$argv[$i]) then
+                                echo "There is No File like that"
+                        else
+                                echo $TRLIST
+                                set RPATH = `grep $argv[$i] $TRLIST`
+                                echo $RPATH
+                                mv $TR/$argv[$i] $RPATH[2]
+                                echo "Restore $argv[$i] in Trash Can To $RPATH[2]"
+                                grep -v $argv[$i] $TRLIST > $TMPLIST
+                                mv $TMPLIST $TRLIST
+                        endif
+                        @ i++
+                end
+                breaksw
+        case "-ar":
+                echo -n "Are you Sure? (Y/N) "
+                set answer = $<
+                if ($answer == "y" || $answer == "Y") then
+                        @ line = `echo $TRLIST | wc -l`
+                        if ($line >= 1) then
+                                while ($line >= 1)
+                                        set RPATH = `head -1 $TRLIST`
+                                        mv $TR/$RPATH[1] $RPATH[2]
+                                        echo "Restore $RPATH[1] in Trash Can To $RPATH[2]"
+                                        grep -v $RPATH[1] $TRLIST > $TMPLIST
+                                        mv $TMPLIST $TRLIST
+                                        @ line--
+                                end
+                        else
+                                echo "The Trash Can is Empty"
+                        endif
                 else
-                        mv $TR/$argv[2] $cwd
-                        echo "Restore $argv[2] in Trash Can"
+                        echo "Cancel the Restoring All Files"
                 endif
                 breaksw
         case "-l":
@@ -43,11 +88,13 @@ switch($argv[1])
         case "-x":
                 echo -n "Are you Sure? (Y/N) "
                 set answer = $<
-                if ($answer == "y") then
+                if ($answer == "y" || $answer == "Y") then
                         rm -r $TR
+                        cat /dev/null > $TRLIST
                         echo "Clear Trash Can"
                 else
                         echo "Cancel Clearing"
+                endif
                 breaksw
         default:
                 echo "잘못 사용한 옵션"
