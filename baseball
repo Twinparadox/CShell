@@ -1,0 +1,57 @@
+# Baseball Program
+
+@ com = `nan`
+@ com1 = `echo $com | cut -c1`
+@ com2 = `echo $com | cut -c2`
+@ com3 = `echo $com | cut -c3`
+
+set com = ($com1 $com2 $com3)
+@ round = 1
+
+while ($round <= 9)
+replay:
+        echo -n "세자리 숫자 입력 : "
+        set you = $<
+
+        @ len = `echo $you | wc -c` - 1
+        set you1 = `echo $you | cut -c1`
+        set you2 = `echo $you | cut -c2`
+        set you3 = `echo $you | cut -c3`
+
+        if ($you1 !~ [1-9] || $you2 !~ [1-9] || $you3 !~ [1-9] || $len != 3) then
+                echo "1에서 9사이의 세자리 숫자만 입력 가능합니다."
+                goto replay
+        endif
+        if($you1 == $you2 || $you2 == $you3 || $you3 == $you1) then
+                echo "동일한 숫자는 입력하지 마세요."
+                goto replay
+        endif
+        set you = ($you1 $you2 $you3)
+
+        @ ball = 0
+        @ strike = 0
+        @ i = 1
+
+        while ($i <= 3)
+                @ j = 1
+                while ($j <= 3)
+                        if ($com[$i] == $you[$j]) then
+                                if($i == $j) then
+                                        @ strike++
+                                else
+                                        @ ball++
+                                endif
+                        endif
+                        @ j++
+                end
+                @ i++
+        end
+        echo "$round 회 -- : $you"
+        echo "$strike S  $ball B"
+        if ($strike == 3) then
+                echo "축하합니다."
+                exit
+        endif
+        @ round++
+end
+echo "컴퓨터가 만든 난수는 $com 이었습니다."
