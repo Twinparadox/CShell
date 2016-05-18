@@ -82,6 +82,7 @@ switch($argv[1])
                 breaksw
         case "-l":
                 echo "==========<Trash Can>=========="
+                $ dirC =
                 ls $TR
                 echo "==============================="
                 breaksw
