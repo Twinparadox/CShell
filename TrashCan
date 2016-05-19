@@ -3,6 +3,11 @@
 
 set TR = $home/.trash
 set TRLIST = $home/.trashlist
+# Trash Can Program
+
+
+set TR = $home/.trash
+set TRLIST = $home/.trashlist
 set TMPLIST = $home/.trashtmplist
 
 if (! -e $TR) mkdir $TR
@@ -30,8 +35,9 @@ switch($argv[1])
                 while ($i <= $#argv)
                         if (-e $argv[$i]) then
                                 mv $argv[$i] $TR
+                                set DirFile = `ls -l | grep $argv[$i] | cut c-1`
                                 echo "Delte $argv[$i]"
-                                echo "$argv[$i] $cwd" >> $TRLIST
+                                echo "$argv[$i] $cwd $DirFile" >> $TRLIST
                         else
                                 echo "There is No File Name : $argv[$i]"
                         endif
@@ -81,10 +87,13 @@ switch($argv[1])
                 endif
                 breaksw
         case "-l":
-                echo "==========<Trash Can>=========="
-                $ dirC =
-                ls $TR
-                echo "==============================="
+                echo "===============<Trash Can>==============="
+                set dirC = `ls -l $TR | grep ^d | wc -l`
+                set fileC = `ls -l $TR | grep ^- | wc -l`
+                echo "디렉토리 개수 : $dirC, 파일 개수 : $fileC"
+                echo "디렉토리 목록 : "
+                cat $TRLIST | grep ^d
+                echo "========================================="
                 breaksw
         case "-x":
                 echo -n "Are you Sure? (Y/N) "
