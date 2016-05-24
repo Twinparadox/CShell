@@ -48,7 +48,7 @@ switch($argv[1])
                 endif
                 echo $argv[2] > $TROPTION
                 breaksw
-	case "-g":
+        case "-g":
                 echo "  <<< 휴지통 사용 가이드 >>>  "
                 echo ""
                 echo " -o : 휴지통 최대 용량 변경 "
@@ -221,7 +221,6 @@ switch($argv[1])
                                                 grep -vw $weight[1] $TRLIST > $TMPLIST
                                                 mv $TMPLIST $TRLIST
                                                 rm -r $TR/$weight[1]
-                                                cat $TRLIST
                                         endif
                                 endif
                                 shift weight
