@@ -5,7 +5,7 @@ set TR = $home/.trash
 set TRLIST = $home/.trashlist
 set TMPLIST = $home/.trashtmplist
 set TRVOLUME = $home/.trashvolume
-@ MAX = 3000
+set TROPTION = $home/.trashoption
 
 if (! -e $TR) mkdir $TR
 if (! -e $TRLIST) then
@@ -21,16 +21,59 @@ if (! -e $TMPLIST) then
         touch $TMPLIST
         chmod +x $TMPLIST
 endif
+if (! -e $TROPTION) then
+        touch $TROPTION
+        chmod +x $TROPTION
+        echo "3000" >> $TROPTION
+endif
 
 if ($#argv < 1) then
-        echo "사용법 : $0 -[dlrx,ar,xz] files..."
+        echo "사용법 : $0 -[ogdlrx,ar,xc,xz] files..."
+        echo "자세한 사용법은 : $0 -g 참고! "
         exit
 endif
 
+set MAX = `cat $TROPTION`
+
 switch($argv[1])
+        case "-o":
+                if ($#argv < 2) then
+                        echo "사용법 : $0 -o 용량(byte) "
+                        exit
+                endif
+                echo $argv[2] > $TROPTION
+                breaksw
+	case "-g":
+                echo "  <<< 휴지통 사용 가이드 >>>  "
+                echo ""
+                echo " -o : 휴지통 최대 용량 변경 "
+                echo " $0 -o 용량(Byte) "
+                echo ""
+                echo " -d : 특정 파일 혹은 디렉토리 삭제 "
+                echo " $0 -d file(or directory)... "
+                echo ""
+                echo " -r : 휴지통 내의 특정 파일 혹은 디렉토리 복원 "
+                echo " $0 -r file(or directory)... "
+                echo ""
+                echo " -ar : 휴지통 내의 모든 파일 및 디렉토리 복원 "
+                echo " $0 -ar "
+                echo ""
+                echo " -l : 휴지통 내용 조회 "
+                echo " $0 -l "
+                echo ""
+                echo " -x : 휴지통 비우기 "
+                echo " $0 -x "
+                echo ""
+                echo " -xc : 휴지통 내의 특정 파일 혹은 디렉토리 삭제하기 "
+                echo " $0 -x file(or directory)... "
+                echo ""
+                echo " -xz : 휴지통 내의 용량이 0인 파일 삭제하기 "
+                echo " $0 -xz "
+                echo ""
+                breaksw
         case "-d":
                 if ($#argv < 2) then
-                        echo "사용법 : $0 -[dlrx,ar,xz] files..."
+                        echo "사용법 : $0 -d files(or directory)... "
                         exit
                 endif
                 @ i = 2
@@ -41,6 +84,7 @@ switch($argv[1])
                                 set PastVolume = `cat $TRVOLUME`
                                 if (($PastVolume + $Volume[4]) > $MAX) then
                                         echo "Capacity Exceed! "
+                                        echo "용량을 늘리거나, 파일을 삭제해주세요"
                                         break
                                 endif
                                 @ sum = $PastVolume + $Volume[4]
@@ -56,7 +100,7 @@ switch($argv[1])
                 breaksw
         case "-r":
                 if ($#argv < 2) then
-                        echo "사용법 : $0 -[dlrx,ar,xz] files..."
+                        echo "사용법 : $0 -r files(or directory)... "
                         exit
                 endif
                 @ i = 2
@@ -113,7 +157,7 @@ switch($argv[1])
                 while ($i < $#tmp)
                         echo -n " $tmp[$i] "
                         @ i = $i + 3
-                end    
+                end
                 echo ""
                 echo "========================================="
                 echo -n "파일 목록 : "
@@ -140,14 +184,24 @@ switch($argv[1])
                 breaksw
         case "-xc":
                 if ($#argv < 2) then
-                        echo "사용법 : $0 -[dlrx,ar,xc,xz] files..."
+                        echo "사용법 : $0 -xc files(or directory)... "
                         exit
                 endif
                 @ i = 2
                 while ($i <= $#argv)
                         if (! -e $TR/$argv[$i]) then
                                 echo "There is No File like that"
+                        else
+                                set PastVolume = `cat $TRVOLUME`
+                                set Volume = `ls -l $TR | grep -w $argv[$i]`
+                                @ sum = $PastVolume - $Volume[4]
+                                echo $sum > $TRVOLUME
+                                grep -vw $argv[$i] $TRLIST > $TMPLIST
+                                mv $TMPLIST $TRLIST
+                                rm -r $TR/$argv[$i]
+                                echo "Remove $argv[$i] in Trash Can"
                         endif
+                        @ i++
                 end
                 breaksw
         case "-xz":
@@ -173,10 +227,11 @@ switch($argv[1])
                         echo "Success Clearing 0 byte files"
                 else
                         echo "Cancel Clearing 0 byte files"
-                endif  
+                endif
                 breaksw
         default:
                 echo "잘못 사용한 옵션"
-                echo "사용법 : $0 -[dlrx,ar,xz] files..."
+                echo "사용법은 guide 참조"
+                echo " $0 -g "
                 breaksw
 endsw
