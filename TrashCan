@@ -214,14 +214,11 @@ switch($argv[1])
                 set answer = $<
                 if ($answer == "y" || $answer == "Y") then
                         set weight = `ls $TR`
-                        echo $weight
                         while ($#weight)
-                                echo $weight[1]
                                 if (-f $TR/$weight[1]) then
                                         set info = `ls -l $TR/$weight[1]`
-                                        echo $info
                                         if ($info[4] == 0) then
-                                                grep -v $weight[1] $TRLIST > $TMPLIST
+                                                grep -vw $weight[1] $TRLIST > $TMPLIST
                                                 mv $TMPLIST $TRLIST
                                                 rm -r $TR/$weight[1]
                                                 cat $TRLIST
