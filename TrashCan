@@ -41,6 +41,11 @@ switch($argv[1])
                         echo "사용법 : $0 -o 용량(byte) "
                         exit
                 endif
+                set now = `cat $TRVOLUME`
+                if ($argv[2] < $now) then
+                        echo "현재 휴지통에 점유된 용량이 설정하고자 하는 용량보다 큽니다. "
+                        exit
+                endif
                 echo $argv[2] > $TROPTION
                 breaksw
 	case "-g":
