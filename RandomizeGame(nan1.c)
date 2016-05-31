@@ -1,0 +1,61 @@
+<nan1.c> gcc –o lot nan1.c
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+int main()
+{
+        srand((unsigned)time(NULL));
+        int arr[6];
+        int i=0, j, cnt;
+        int bonus;
+        int tmp;
+        while (i<6)
+        {
+                cnt=0;
+                arr[i]=1+rand()%45;
+
+                for(j=0;j<i;j++)
+                {
+                        if(arr[i]==arr[j])
+                        {
+                                cnt++;
+                                break;
+                        }
+                }
+                if(cnt==0)
+                        i++;
+        }
+        for(;;)
+        {
+                cnt=0;
+                bonus=1+rand()%45;
+                for(j=0;j<6;j++)
+                {
+                        if(arr[i]==arr[j])
+                        {
+                                cnt++;
+                                break;
+                        }
+                }
+                if(cnt==0)
+                        break;
+        }
+        for(i=0;i<5;i++)
+        {
+                for(j=0;j<5-i;j++)
+                {
+                        if(arr[j]>arr[j+1])
+                        {
+                                tmp=arr[j];
+                                arr[j]=arr[j+1];
+                                arr[j+1]=tmp;
+                        }
+                }
+        }
+
+        for(i=0;i<6;i++)
+                printf("%d ",arr[i]);
+        printf("%d",bonus);
+        return 0;
+}
