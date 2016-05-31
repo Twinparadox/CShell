@@ -1,0 +1,121 @@
+# Lotto
+
+set user
+
+retry:
+
+echo "자동으로 번호를 고르게 하겠습니까?(Y/N, y/n)"
+set YN = $<
+
+if($YN[1] == 'y' || $YN[1] == 'Y') then
+        set user = `lot`
+        sleep 1
+        set number = `lot`
+else
+        set number = `lot`
+        @ cnt = 1
+        while ($cnt <= 7)
+                again:
+
+                if($cnt < 7) then
+                        echo "$cnt 번째 숫자를 입력하세요(1~45) : "
+                else
+                        echo "보너스 숫자를 입력하세요(1~45) : "
+                endif
+                @ input = $<
+
+                if($input > 45 || $input <1) then
+                        echo "입력 숫자 범위는 1부터 45까지 입니다."
+                        echo ""
+                endif
+
+                @ i = 1
+                @ same = 0
+
+                while ($i < $cnt)
+                        if($user[$i] == $input) then
+                                @ same++
+                                break
+                        endif
+                        @ i++
+                end
+
+                if($same > 0) then
+                        echo "같은 숫자는 입력할 수 없습니다."
+                        echo ""
+                        goto again
+                endif
+
+                set user = ($user $input)
+                @ cnt++
+        end
+endif
+
+@ cnt = 0
+@ bon = 0
+@ i = 1
+
+while ($i <= 6)
+        @ j = 1
+        while ($j <= 6)
+                if($user[$i] == $number[$j]) then
+                        @ cnt++
+                endif
+                @ j++
+        end
+        @ i++
+end
+if ($user[7] == $number[7]) then
+        @ bon++
+endif
+
+@ i = 1
+echo -n "이번 회차 당첨 번호 :   "
+while ($i <= 6)
+        echo -n "$number[$i] "
+        @ i++
+end
+echo -n "  +  보너스 번호( $number[7] )"
+echo ""
+
+@ i = 1
+echo -n "당신이 뽑은 번호 :   "
+while ($i <= 6)
+        echo -n "$user[$i] "
+        @ i++
+end
+echo -n " +  보너스 번호( $user[7] )"
+echo ""
+
+switch($cnt)
+        case 3:
+                echo "5등 당첨... 당첨 확률 (1:45)"
+                breaksw
+        case 4:
+                echo "4등 당첨. 당첨 확률 (1:733)"
+                breaksw
+        case 5:
+                if($bon > 0) then
+                        echo "2등 당첨!!! 축하드립니다."
+                        echo "당첨 확률 (1:1,357,510)"
+                else
+                        echo "3등 당첨! 당첨 확률 (1:34,808)"
+                endif
+                breaksw
+        case 6:
+                echo "1등 당첨!!!!!!!!!!!!"
+                echo "당첨 확률 (1:8,145,060)"
+                echo "<<Congratulations!>>"
+                breaksw
+        default:
+                echo "꽝! 다음 기회에..."
+                breaksw
+endsw
+
+echo ""
+echo "다시 하시겠습니까?(Y/N or y/n)"
+set YN = $<
+
+if($YN[1] == 'y' || $YN[1] == 'Y') then
+        goto retry
+endif
